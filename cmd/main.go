@@ -35,21 +35,14 @@ func (s *MySubscriber) Handle(ctx context.Context, ev *eventbus.Event) error {
 }
 
 func main() {
-	bus := eventbus.New(
-		eventbus.WithPoolSize(5),
-	)
-
 	subscriber1 := &MySubscriber{IDValue: "subscriber1"}
 	subscriber2 := &MySubscriber{IDValue: "subscriber2"}
 
-	err := bus.Subscribe(subscriber1)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = bus.Subscribe(subscriber2)
-	if err != nil {
-		log.Fatal(err)
-	}
+	bus := eventbus.New(
+		eventbus.WithPoolSize(5),
+		eventbus.WithRetries(3),
+		eventbus.WithSubscribers(subscriber1, subscriber2),
+	)
 
 	ctx, cancel := context.WithCancel(context.Background())
 
@@ -62,6 +55,7 @@ func main() {
 
 	go func() {
 		publishCh := bus.Publish()
+
 		for i := 1; i <= 5; i++ {
 			event := &eventbus.Event{
 				Ctx:     ctx,

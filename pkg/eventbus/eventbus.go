@@ -132,8 +132,9 @@ func (eb *EventBus) Start(ctx context.Context) {
 			fmt.Printf("total message published: %d\n", counter)
 
 			eb.pool.StopAndWait()
-
 			eb.stopCh <- struct{}{}
+
+			return
 		}
 	}
 }
