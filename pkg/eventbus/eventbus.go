@@ -66,7 +66,7 @@ func (eb *EventBus) Subscribe(s Subscriber) error {
 	defer eb.m.Unlock()
 
 	if s == nil {
-		return errors.New("subscriber can not nil")
+		return errors.New("subscriber can not be nil")
 	}
 
 	if _, has := eb.subscribers[s.ID()]; has {
@@ -96,6 +96,7 @@ func (eb *EventBus) notify(ev *Event) {
 	for _, s := range eb.subscribers {
 		retries := 0
 
+		// notifies all subscribers using retries strategy and using goroutines
 		err := eb.pool.Go(func() {
 			for retries < eb.maxRetries {
 				if err := s.Handle(ev.Ctx, ev); err == nil {

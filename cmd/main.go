@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jlmanriquez/eventbus/pkg/eventbus"
 	"log"
+	"math/rand"
 	"os"
 	"os/signal"
 	"syscall"
@@ -24,11 +25,13 @@ func (s *MySubscriber) Handle(ctx context.Context, ev *eventbus.Event) error {
 		return nil
 	}
 
+	pauseTime := rand.Int31n(1800) + 200
+
 	select {
 	case <-ctx.Done():
 		log.Printf("subscriber %s: context canceled", s.ID())
 		return ctx.Err()
-	case <-time.After(2 * time.Second):
+	case <-time.After(time.Duration(pauseTime) * time.Millisecond):
 		log.Printf("subscriber %s: Event handled, Topic: %s, Payload: %v", s.ID(), ev.Topic, ev.Payload)
 		return nil
 	}
