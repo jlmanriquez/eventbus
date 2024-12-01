@@ -3,13 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/jlmanriquez/eventbus/pkg/eventbus"
 	"log"
 	"math/rand"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/jlmanriquez/eventbus/pkg/eventbus"
 )
 
 type MySubscriber struct {
@@ -38,13 +39,13 @@ func (s *MySubscriber) Handle(ctx context.Context, ev *eventbus.Event) error {
 }
 
 func main() {
-	subscriber1 := &MySubscriber{IDValue: "subscriber1"}
-	subscriber2 := &MySubscriber{IDValue: "subscriber2"}
+	subscriber1 := MySubscriber{IDValue: "subscriber1"}
+	subscriber2 := MySubscriber{IDValue: "subscriber2"}
 
 	bus := eventbus.New(
 		eventbus.WithPoolSize(5),
 		eventbus.WithRetries(3),
-		eventbus.WithSubscribers(subscriber1, subscriber2),
+		eventbus.WithSubscribers(&subscriber1, &subscriber2),
 	)
 
 	ctx, cancel := context.WithCancel(context.Background())
